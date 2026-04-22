@@ -1,353 +1,375 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import {
     View,
     Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    StatusBar,
-    Platform,
-    KeyboardAvoidingView,
     ScrollView,
-    Image
+    TouchableOpacity,
+    Switch,
+    StyleSheet,
+    Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import * as ImagePicker from 'react-native-image-picker';
-import camera from '../../assets/icon/camera.png'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { AuthContext } from '../../context/AuthContext';
 
-const ProfileScreen = ({ size = 140 }) => {
-    const [name, setName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [height, setHeight] = useState('');
-    const [weight, setWeight] = useState('');
-    const [age, setAge] = useState('');
-    const [gender, setGender] = useState('');
-    const [selected, setSelected] = useState('Male');
-    const navigation = useNavigation();
+const { width } = Dimensions.get('window');
+
+const ProfileScreen = () => {
+    const insets = useSafeAreaInsets();
+    const tabBarHeight = useBottomTabBarHeight();
     const { logout } = useContext(AuthContext);
-    const [profileImage, setProfileImage] = useState(null);
 
-    const handleCompleteProfile = () => {
-        alert("Completed the profile.")
-    };
-
-    const openImagePicker = () => {
-        const options = {
-            mediaType: 'photo',
-            quality: 0.8,
-            maxWidth: 800,
-            maxHeight: 800,
-            includeBase64: false,
-        };
-
-        ImagePicker.launchImageLibrary(options, (response) => {
-            if (response.didCancel) {
-                return;
-            }
-            if (response.errorCode) {
-                Alert.alert('Error', response.errorMessage);
-                return;
-            }
-            if (response.assets && response.assets.length > 0) {
-                const selectedUri = response.assets[0].uri;
-                setProfileImage(selectedUri);
-            }
-        });
-    };
+    const [dailyReminder, setDailyReminder] = React.useState(true);
+    const [highAlerts, setHighAlerts] = React.useState(true);
 
     return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={[
+                styles.content,
+                {
+                    paddingTop: insets.top + 20,
+                    paddingBottom: tabBarHeight + insets.bottom + 40,
+                },
+            ]}
+            showsVerticalScrollIndicator={false}
+        >
+            {/* Header */}
+            <Text style={styles.title}>
+                me.
+            </Text>
 
-            <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
+            {/* Profile Card */}
+            <View style={styles.profileCard}>
+                <View style={styles.avatarContainer}>
+                    <View style={styles.avatar}>
+                        <Text style={styles.avatarText}>PM</Text>
+                    </View>
+                </View>
+
+                <View style={styles.profileInfo}>
+                    <Text style={styles.name}>Patrick{"\n"}Martin</Text>
+                    <Text style={styles.email}>patrick@thisisme.co</Text>
+
+                    <View style={styles.badges}>
+                        <View style={styles.badge}>
+                            <Text style={styles.badgeText}>Day 14</Text>
+                        </View>
+                        <View style={[styles.badge, styles.secondBadge]}>
+                            <Text style={styles.secondBadgeText}>8161.co</Text>
+                        </View>
+                    </View>
+                </View>
+            </View>
+
+            {/* Stats Row */}
+            <View style={styles.statsContainer}>
+                <View style={styles.statBox}>
+                    <Text style={styles.statValue}>5'11"</Text>
+                    <Text style={styles.statLabel}>Height</Text>
+                </View>
+                <View style={styles.statBox}>
+                    <Text style={styles.statValue}>185</Text>
+                    <Text style={styles.statLabel}>lbs</Text>
+                </View>
+                <View style={styles.statBox}>
+                    <Text style={styles.statValue}>60s</Text>
+                    <Text style={styles.statLabel}>Deep</Text>
+                </View>
+            </View>
+
+            {/* Account Card */}
+            <View style={styles.accountSection}>
+                <Text style={styles.sectionLabel}>ACCOUNT</Text>
+                <View style={styles.accountCard}>
+                    <TouchableOpacity style={styles.accountItem}>
+                        <View style={styles.accountItemLeft}>
+                            <Text style={styles.accountItemTitle}>Edit Profile</Text>
+                            <Text style={styles.accountItemSubtitle}>Name, height, weight, zip</Text>
+                        </View>
+                        <Text style={styles.chevron}>›</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.divider} />
+
+                    <TouchableOpacity style={styles.accountItem}>
+                        <Text style={styles.accountItemTitle}>Change password</Text>
+                        <Text style={styles.chevron}>›</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.divider} />
+
+                    <TouchableOpacity style={styles.accountItem}>
+                        <Text style={styles.accountItemTitle}>Integrations</Text>
+                        <Text style={styles.chevron}>›</Text>
+                    </TouchableOpacity>
+
+                    <View style={styles.divider} />
+
+                    <TouchableOpacity style={styles.accountItem}>
+                        <View style={styles.accountItemLeft}>
+                            <Text style={styles.accountItemTitle}>Email address</Text>
+                            <Text style={styles.accountItemSubtitle}>patrick@thisisme.co</Text>
+                        </View>
+                        <Text style={styles.chevron}>›</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            {/* Notification Card */}
+            <View style={styles.accountSection}>
+                <Text style={styles.sectionLabel}>Notification</Text>
+                <View style={styles.accountCard}>
+                    <TouchableOpacity style={styles.notifyItem}>
+                        <View style={styles.accountItemLeft}>
+                            <Text style={styles.accountItemTitle}>Daily check-in reminder</Text>
+                            <Text style={styles.accountItemSubtitle}>9:00 AM daily</Text>
+                        </View>
+                        {/* <Text style={styles.chevron}>›</Text> */}
+                        <Switch
+                            value={dailyReminder}
+                            onValueChange={setDailyReminder}
+                            trackColor={{ false: '#ddd', true: '#3D6B4F' }}
+                            thumbColor="#fff"
+                        />
+                    </TouchableOpacity>
+
+                    <View style={styles.divider} />
+
+                    <TouchableOpacity style={styles.accountItem}>
+                        <View style={[styles.accountItemLeft, {paddingVertical: 10}]}>
+                            <Text style={styles.accountItemTitle}>high alerts</Text>
+                            <Text style={styles.accountItemSubtitle}>patrick@thisisme.co</Text>
+                        </View>
+                        <Switch
+                            value={highAlerts}
+                            onValueChange={setHighAlerts}
+                            trackColor={{ false: '#ddd', true: '#3D6B4F' }}
+                            thumbColor="#fff"
+                        />
+                    </TouchableOpacity>
+
+                    <View style={styles.divider} />
+
+                </View>
+            </View>
+
+            <TouchableOpacity
+                onPress={logout}
+                style={{ paddingVertical: 16, borderRadius: 15, alignItems: 'center', backgroundColor: '#e02012', marginVertical: 10 }}
             >
-                <ScrollView
-                    contentContainerStyle={{ flexGrow: 1 }}
-                    keyboardShouldPersistTaps="handled"
-                >
-                    {/* Header text */}
-                    <View style={styles.header}>
-                        <Text style={styles.title}>
-                            Fill Your <Text style={styles.highlight}>Profile</Text>
-                        </Text>
-                        <Text style={styles.subtitle}>
-                            Lorem ipsum dolor sit amet consectetur. Adipiscing felis ut sagittis sed nisi morbi morbi. Consequat venenatis.
-                        </Text>
-                    </View>
-
-                    {/* Inputs */}
-                    <View style={styles.form}>
-                        <View style={styles.parentContainer}>
-                            <TouchableOpacity
-                                style={styles.imageWrapper}
-                                onPress={openImagePicker}
-                                activeOpacity={0.8}
-                            >
-                                {/* Profile Image */}
-                                {profileImage ? (
-                                    <Image
-                                        source={{ uri: profileImage }}
-                                        style={[styles.profileImage, { width: size, height: size }]}
-                                    />
-                                ) : (
-                                    <View style={[styles.placeholder, { width: size, height: size }]}>
-                                        <Icon name="account" size={size * 0.55} color="#666" />
-                                    </View>
-                                )}
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={openImagePicker}>
-                                <View style={styles.cameraButton}>
-                                    <Image source={camera} style={{
-                                        width: 18,
-                                        height: 15,
-                                        resizeMode: 'cover'
-                                    }} />
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-
-                        <Text style={styles.label}>First Name</Text>
-                        <TextInput
-                            style={[styles.input, { marginBottom: 16 }]}
-                            placeholder="John"
-                            placeholderTextColor="#000"
-                            value={name}
-                            onChangeText={setName}
-                            autoCapitalize="none"
-                        />
-
-                        <Text style={styles.label}>Last Name</Text>
-                        <TextInput
-                            style={[styles.input, { marginBottom: 16 }]}
-                            placeholder="Doe"
-                            placeholderTextColor="#000"
-                            value={lastName}
-                            onChangeText={setLastName}
-                            autoCapitalize="none"
-                        />
-
-                        <Text style={styles.label}>Age</Text>
-                        <TextInput
-                            style={[styles.input, { marginBottom: 16 }]}
-                            placeholder="24"
-                            placeholderTextColor="#000"
-                            value={age}
-                            onChangeText={(text) => {
-                                const numericText = text.replace(/[^0-9]/g, '');
-                                setAge(numericText);
-                            }}
-                            keyboardType="numeric"
-                            maxLength={3}
-                            autoCapitalize="none"
-                        />
-
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <View style={{ flex: 1, marginRight: 10 }}>
-                                <Text style={styles.label}>Height (cm)</Text>
-                                <TextInput
-                                    style={[styles.input, { marginBottom: 16 }]}
-                                    placeholder="120"
-                                    placeholderTextColor="#000"
-                                    value={height}
-                                    onChangeText={(text) => {
-                                        const numericText = text.replace(/[^0-9]/g, '');
-                                        setHeight(numericText);
-                                    }}
-                                    keyboardType="numeric"
-                                    maxLength={5}
-                                    autoCapitalize="none"
-                                />
-                            </View>
-
-                            <View style={{ flex: 1 }}>
-                                <Text style={styles.label}>Weight (kg)</Text>
-                                <TextInput
-                                    style={[styles.input, { marginBottom: 16 }]}
-                                    placeholder="80"
-                                    placeholderTextColor="#000"
-                                    value={weight}
-                                    onChangeText={(text) => {
-                                        const numericText = text.replace(/[^0-9]/g, '');
-                                        setWeight(numericText);
-                                    }}
-                                    keyboardType="numeric"
-                                    maxLength={5}
-                                    autoCapitalize="none"
-                                />
-                            </View>
-                        </View>
-
-                        <View>
-                            <Text style={styles.label}>Gender</Text>
-                            <View style={styles.genderContainer}>
-                                <TouchableOpacity
-                                    style={[
-                                        styles.button,
-                                        selected === 'Male' && styles.activeButton,
-                                    ]}
-                                    onPress={() => setSelected('Male')}
-                                >
-                                    <Text
-                                        style={[
-                                            styles.buttonText,
-                                            selected === 'Male' && styles.activeButtonText,
-                                        ]}
-                                    >
-                                        Male
-                                    </Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[
-                                        styles.button,
-                                        selected === 'Female' && styles.activeButton,
-                                    ]}
-                                    onPress={() => setSelected('Female')}
-                                >
-                                    <Text
-                                        style={[
-                                            styles.buttonText,
-                                            selected === 'Female' && styles.activeButtonText,
-                                        ]}
-                                    >
-                                        Female
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        {/* Login Button */}
-                        <TouchableOpacity style={{ paddingVertical: 16, borderRadius: 15, alignItems: 'center', backgroundColor: '#CDFF00', fontSize: 15 }} onPress={handleCompleteProfile}>
-                            <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold' }}>
-                                Complete The Profile
-                            </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity onPress={logout} style={{ paddingVertical: 16, borderRadius: 15, alignItems: 'center', backgroundColor: '#e02012', fontSize: 15, marginVertical: 10 }}>
-                            <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold' }}>
-                                Logout
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+                <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold' }}>Logout</Text>
+            </TouchableOpacity>
+        </ScrollView>
     );
-}
+};
+
+export default ProfileScreen;
 
 const styles = StyleSheet.create({
+    title: {
+        marginVertical: 15,
+        marginHorizontal: 5,
+        color: "#3D6B4F",
+        fontFamily: 'PlayfairDisplay-Bold',
+        fontSize: 35,
+    },
     container: {
         flex: 1,
-        backgroundColor: '#000',
-        paddingHorizontal: 24,
+        backgroundColor: '#EEE8DF',
     },
-    imageWrapper: {
-        width: 125,
-        height: 125,
-        borderRadius: "50%",
-        borderWidth: 4,
-        borderColor: '#CDFF00',
-        overflow: 'hidden',
-        justifyContent: 'center',
-        alignItems: 'center',
+    content: {
+        paddingHorizontal: 20,
     },
-    placeholder: {
-    backgroundColor: '#1A1A1A',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 999,
-  },
-    parentContainer: {
+    headerTitle: {
+        fontSize: 28,
+        fontWeight: '600',
+        color: '#2C2C2C',
+        marginBottom: 24,
+    },
+    profileCard: {
+        backgroundColor: '#1C1C1C',
+        borderRadius: 5,
+        padding: 20,
         flexDirection: 'row',
-        justifyContent: 'center',
-        position: "relative"
+        alignItems: 'center',
+        marginBottom: 24,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 5,
     },
-    cameraButton: {
-        position: 'absolute',
-        bottom: 8,
-        right: 4,
-        backgroundColor: '#000',
-        width: 40,
-        height: 40,
-        borderRadius: 21,
+    avatarContainer: {
+        marginRight: 30,
+    },
+    avatar: {
+        width: 90,
+        height: 90,
+        borderRadius: 50,
+        backgroundColor: '#4A7043',
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 3,
-        borderColor: '#CDFF00',
     },
-    header: {
-        marginTop: 50,
-        marginBottom: 30,
-        marginHorizontal: 5,
-    },
-    title: {
-        fontSize: 35,
-        fontWeight: 'bold',
+    avatarText: {
         color: '#fff',
-        lineHeight: 38
+        fontSize: 22,
+        fontWeight: '600',
+        fontFamily: 'PlayfairDisplay-Bold',
     },
-    highlight: {
-        color: '#CDFF00',
-    },
-    subtitle: {
-        fontSize: 15,
-        color: '#fff',
-        marginTop: 8,
-    },
-    form: {
-        marginHorizontal: 5,
+    profileInfo: {
         flex: 1,
     },
-    input: {
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1,
-        borderColor: '#F4F4F4',
-        borderRadius: 15,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        fontSize: 16,
+    name: {
+        fontSize: 24,
+        fontWeight: '600',
+        color: '#fff',
+        marginBottom: 4,
+        fontFamily: 'PlayfairDisplay-Bold',
+    },
+    email: {
+        color: '#F7F3EE',
+        fontSize: 13,
+        marginBottom: 12,
+    },
+    badges: {
+        flexDirection: 'row',
+        gap: 8,
+    },
+    badge: {
+        backgroundColor: '#3D6B4F4D',
+        paddingHorizontal: 14,
+        paddingVertical: 6,
+        borderRadius: 30,
+    },
+    secondBadge: {
+        backgroundColor: '#8A85757D',
+    },
+    badgeText: {
+        color: '#639878',
+        fontSize: 13,
+        fontWeight: '500',
+    },
+    secondBadgeText: {
+        color: '#8A8575',
+        fontSize: 13,
+        fontWeight: '500',
+    },
+    statsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginBottom: 32,
+        gap: 5
+    },
+    statBox: {
+        backgroundColor: '#F7F3EE',
+        borderColor: "#C4B89A",
+        width: (width - 60) / 4,
+        paddingVertical: 16,
+        borderRadius: 5,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 6,
+        elevation: 3,
+    },
+    statValue: {
+        fontSize: 23,
+        color: '#333',
+        fontFamily: 'PlayfairDisplay-Bold',
+    },
+    statLabel: {
+        fontSize: 12,
+        color: '#000000',
+        marginTop: 4,
+    },
+    section: {
+        marginBottom: 28,
+    },
+    sectionTitle: {
+        fontSize: 14,
+        fontWeight: '600',
         color: '#666',
+        marginBottom: 12,
+        paddingLeft: 4,
     },
-    label: {
-        paddingHorizontal: 10,
-        paddingBottom: 5,
-        fontSize: 15,
-        color: '#fff',
-    },
-    genderContainer: {
-        flexDirection: 'row',
+    listItem: {
+        backgroundColor: '#fff',
+        padding: 18,
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#CDFF00',
-        overflow: 'hidden',
-        padding: 2.5,
-        marginBottom: 20
+        marginBottom: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    button: {
-        flex: 1,
+    listTitle: {
+        fontSize: 16,
+        fontWeight: '500',
+        color: '#222',
+    },
+    listSubtitle: {
+        fontSize: 13,
+        color: '#777',
+        marginTop: 3,
+    },
+    chevron: {
+        fontSize: 24,
+        color: '#ccc',
+        fontWeight: '300',
+    },
+    accountSection: {
+        marginBottom: 22,
+    },
+    sectionLabel: {
+        fontSize: 14,
+        color: '#727272',
+        backgroundColor: "#DDD5C6",
         paddingVertical: 12,
-        backgroundColor: '#000',
+        paddingHorizontal: 20,
+        borderTopLeftRadius: 7,
+        borderTopRightRadius: 7,
     },
-    activeButton: {
-        backgroundColor: '#CDFF00',
-        borderRadius: 8,
+    accountCard: {
+        backgroundColor: '#FFFFFF',
+        borderBottomLeftRadius: 7,
+        borderBottomRightRadius: 7,
+        overflow: 'hidden',
     },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 16
+    accountItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 2,
     },
-    activeButtonText: {
-        color: '#000',
+    notifyItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+    },
+    accountItemLeft: {
+        flex: 1,
+    },
+    accountItemTitle: {
+        fontSize: 15,
+        color: '#000000',
+        fontWeight: '400',
+    },
+    accountItemSubtitle: {
+        fontSize: 13,
+        color: '#727272',
+        marginTop: 2,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#C4B89A',
+    },
+    chevron: {
+        fontSize: 35,
+        color: '#DDD5C6',
+        marginLeft: 8,
     },
 });
-
-export default ProfileScreen

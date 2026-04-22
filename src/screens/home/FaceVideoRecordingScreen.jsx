@@ -1,596 +1,78 @@
-// import React, { useRef, useState, useCallback } from 'react';
-// import { View, StyleSheet, Alert, Button, Text } from 'react-native';
-// import {
-//   Camera,
-//   useCameraDevice,
-//   useCameraPermission,
-//   useFrameProcessor,
-// } from 'react-native-vision-camera';
-// import { scanFaces } from 'react-native-vision-camera-face-detector';
-// import { runOnJS } from 'react-native-reanimated';
-
-// import { CameraOverlay } from '../../components/CameraOverlay';
-// import { isFaceInGoodPosition } from '../../utils/faceUtils';
-
-// const FaceVideoRecordingScreen = () => {
-//   const cameraRef = useRef(null);
-//   const device = useCameraDevice('front');
-//   const { hasPermission, requestPermission } = useCameraPermission();
-
-//   const [face, setFace] = useState(null);
-//   const [isRecording, setIsRecording] = useState(false);
-//   const [recordingTimer, setRecordingTimer] = useState(0);
-
-//   // Frame Processor
-//   const frameProcessor = useFrameProcessor((frame) => {
-//     'worklet';
-//     const detected = scanFaces(frame);
-
-//     if (detected.length > 0) {
-//       const mainFace = detected[0];
-
-//       runOnJS(setFace)({
-//         bounds: {
-//           x: mainFace.bounds.x,
-//           y: mainFace.bounds.y,
-//           width: mainFace.bounds.width,
-//           height: mainFace.bounds.height,
-//         },
-//       });
-//     } else {
-//       runOnJS(setFace)(null);
-//     }
-//   }, []);
-
-//   const start15SecRecording = useCallback(async () => {
-//     if (!cameraRef.current || isRecording || !face || !isFaceInGoodPosition(face)) {
-//       Alert.alert('Face sahi position mein nahi hai');
-//       return;
-//     }
-
-//     setIsRecording(true);
-//     setRecordingTimer(0);
-
-//     try {
-//       await cameraRef.current.startRecording({
-//         flash: 'off',
-//         onRecordingFinished: (video) => {
-//           setIsRecording(false);
-//           setRecordingTimer(0);
-
-//           Alert.alert(
-//             'Recording Complete',
-//             `Video saved at: ${video.path}`
-//           );
-//         },
-//         onRecordingError: (error) => {
-//           console.error(error);
-//           setIsRecording(false);
-//           Alert.alert('Recording Error', error.message);
-//         },
-//       });
-
-//       // Timer UI
-//       const interval = setInterval(() => {
-//         setRecordingTimer((prev) => {
-//           if (prev >= 14) {
-//             clearInterval(interval);
-//             return 15;
-//           }
-//           return prev + 1;
-//         });
-//       }, 1000);
-
-//       // Auto stop after 15 sec
-//       setTimeout(async () => {
-//         if (cameraRef.current) {
-//           await cameraRef.current.stopRecording();
-//         }
-//       }, 15000);
-
-//     } catch (e) {
-//       console.error(e);
-//       setIsRecording(false);
-//     }
-//   }, [face, isRecording]);
-
-//   const stopRecording = useCallback(async () => {
-//     if (cameraRef.current && isRecording) {
-//       await cameraRef.current.stopRecording();
-//       setIsRecording(false);
-//     }
-//   }, [isRecording]);
-
-//   if (!hasPermission) {
-//     return (
-//       <View style={styles.center}>
-//         <Button title="Camera Permission Do" onPress={requestPermission} />
-//       </View>
-//     );
-//   }
-
-//   if (device == null) {
-//     return <Text>No Camera Device Found</Text>;
-//   }
-
-//   return (
-//     <View style={styles.container}>
-//       <Camera
-//         ref={cameraRef}
-//         style={StyleSheet.absoluteFill}
-//         device={device}
-//         isActive={true}
-//         video={true}
-//         audio={true}
-//         frameProcessor={frameProcessor}
-//         fps={30}
-//       />
-
-//       <CameraOverlay face={face} isRecording={isRecording} />
-
-//       <View style={styles.bottomControls}>
-//         <Text style={styles.timerText}>
-//           {isRecording ? `${recordingTimer} / 15 sec` : ''}
-//         </Text>
-
-//         <Button
-//           title={isRecording ? "Stop Recording" : "Start 15s Recording"}
-//           onPress={isRecording ? stopRecording : start15SecRecording}
-//           disabled={isRecording}
-//         />
-//       </View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: 'black' },
-//   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-//   bottomControls: {
-//     position: 'absolute',
-//     bottom: 40,
-//     alignSelf: 'center',
-//   },
-//   timerText: {
-//     color: 'white',
-//     fontSize: 18,
-//     textAlign: 'center',
-//     marginBottom: 10,
-//   },
-// });
-
-// export default FaceVideoRecordingScreen;
-
-// import React, { useState, useRef, useCallback, useEffect } from 'react';
-// import {
-//   View,
-//   Text,
-//   TouchableOpacity,
-//   StyleSheet,
-//   Dimensions,
-//   Alert,
-// } from 'react-native';
-// import {
-//   Camera,
-//   useCameraDevice,
-//   useCameraPermission,
-//   useFrameProcessor,
-// } from 'react-native-vision-camera';
-// import { scanFaces } from 'react-native-vision-camera-face-detector';
-// import { runOnJS } from 'react-native-reanimated';
-// import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// import Icon from 'react-native-vector-icons/MaterialIcons';
-
-// const { width } = Dimensions.get('window');
-// const OVAL_SIZE = width * 0.75;
-
-// const FaceVideoRecordingScreen = () => {
-//   const cameraRef = useRef(null);
-//   const { hasPermission, requestPermission } = useCameraPermission();
-//   const device = useCameraDevice('front');
-
-//   const [isRecording, setIsRecording] = useState(false);
-//   const [recordingTime, setRecordingTime] = useState(15);
-//   const [faceStatus, setFaceStatus] = useState('no-face');
-//   const [statusMessage, setStatusMessage] = useState('Position your face inside the oval');
-//   const [isFaceDetected, setIsFaceDetected] = useState(false);
-
-//   const insets = useSafeAreaInsets();
-
-//   // Request camera permission
-//   useEffect(() => {
-//     if (!hasPermission) {
-//       requestPermission();
-//     }
-//   }, [hasPermission, requestPermission]);
-
-//   // Check face position
-//   const checkFacePosition = useCallback((face) => {
-//     if (!face?.bounds) return 'no-face';
-
-//     const faceWidth = face.bounds.width;
-//     const faceCenterX = face.bounds.x + faceWidth / 2;
-//     const screenCenterX = width / 2;
-//     const distanceFromCenter = Math.abs(faceCenterX - screenCenterX);
-
-//     const idealFaceSize = OVAL_SIZE * 0.65;
-
-//     if (faceWidth < idealFaceSize * 0.7) return 'too-far';
-//     if (faceWidth > idealFaceSize * 1.3) return 'too-close';
-//     if (distanceFromCenter > 60) return 'too-far';
-
-//     return 'good';
-//   }, []);
-
-//   // Real-time face detection frame processor
-//   const frameProcessor = useFrameProcessor((frame) => {
-//     'worklet';
-//     try {
-//       const faces = scanFaces(frame);
-
-//       runOnJS((detectedFaces) => {
-//         if (detectedFaces.length === 0) {
-//           setIsFaceDetected(false);
-//           setFaceStatus('no-face');
-//           setStatusMessage('No face detected. Please face the camera.');
-//           return;
-//         }
-
-//         const status = checkFacePosition(detectedFaces[0]);
-//         setIsFaceDetected(true);
-//         setFaceStatus(status);
-
-//         if (status === 'good') {
-//           setStatusMessage('Perfect! Keep still and tap Record.');
-//         } else if (status === 'too-far') {
-//           setStatusMessage('Move closer to the camera');
-//         } else if (status === 'too-close') {
-//           setStatusMessage('Move a bit farther');
-//         }
-//       })(faces);
-//     } catch (e) {
-//       console.log('Face detection error', e);
-//     }
-//   }, [checkFacePosition]);
-
-//   // Start 15-second video recording
-//   const startRecording = async () => {
-//     if (!cameraRef.current || !isFaceDetected || faceStatus !== 'good') {
-//       Alert.alert('Warning', 'Please position your face properly inside the oval first.');
-//       return;
-//     }
-
-//     setIsRecording(true);
-//     setRecordingTime(15);
-
-//     try {
-//       await cameraRef.current.startRecording({
-//         flash: 'off',
-//         onRecordingFinished: (video) => {
-//           setIsRecording(false);
-//           setRecordingTime(15);
-//           console.log('Video saved at:', video.path);
-//           Alert.alert(
-//             'Recording Complete',
-//             `Video saved successfully!\n\nPath: ${video.path}`
-//           );
-//           // TODO: Upload video or save to gallery here
-//         },
-//         onRecordingError: (error) => {
-//           console.error('Recording error:', error);
-//           setIsRecording(false);
-//           Alert.alert('Recording Failed', error.message);
-//         },
-//       });
-
-//       // Auto stop after 15 seconds
-//       const timer = setInterval(() => {
-//         setRecordingTime((prev) => {
-//           if (prev <= 1) {
-//             clearInterval(timer);
-//             cameraRef.current?.stopRecording();
-//             return 0;
-//           }
-//           return prev - 1;
-//         });
-//       }, 1000);
-//     } catch (error) {
-//       console.error('Start recording error:', error);
-//       setIsRecording(false);
-//     }
-//   };
-
-//   const stopRecording = async () => {
-//     if (cameraRef.current) {
-//       await cameraRef.current.stopRecording();
-//     }
-//   };
-
-//   if (!hasPermission) {
-//     return (
-//       <View style={styles.center}>
-//         <Text style={styles.permissionText}>Camera permission is required</Text>
-//         <TouchableOpacity onPress={requestPermission} style={styles.button}>
-//           <Text style={styles.buttonText}>Grant Camera Permission</Text>
-//         </TouchableOpacity>
-//       </View>
-//     );
-//   }
-
-//   if (!device) {
-//     return (
-//       <View style={styles.center}>
-//         <Text style={styles.permissionText}>No camera device found</Text>
-//       </View>
-//     );
-//   }
-
-//   return (
-//     <View style={styles.container}>
-//       <Camera
-//         ref={cameraRef}
-//         style={StyleSheet.absoluteFill}
-//         device={device}
-//         isActive={true}
-//         video={true}
-//         audio={true}
-//         frameProcessor={frameProcessor}
-//         frameProcessorFps={15}
-//       />
-
-//       {/* Face Guide Overlay */}
-//       <View style={styles.overlay}>
-//         <View
-//           style={[
-//             styles.faceGuide,
-//             {
-//               borderColor: faceStatus === 'good' ? '#4CAF50' : '#FF9800',
-//             },
-//           ]}
-//         />
-
-//         {/* Status Message */}
-//         <View style={styles.statusContainer}>
-//           <Text style={styles.statusText}>{statusMessage}</Text>
-//         </View>
-
-//         {/* Recording Timer */}
-//         {isRecording && (
-//           <View style={styles.timerContainer}>
-//             <Text style={styles.timerText}>{recordingTime}s</Text>
-//           </View>
-//         )}
-//       </View>
-
-//       {/* Record Button */}
-//       <View style={[styles.controls, { paddingBottom: insets.bottom + 20 }]}>
-//         <TouchableOpacity
-//           style={[
-//             styles.recordButton,
-//             isRecording && styles.recordingButton,
-//           ]}
-//           onPress={isRecording ? stopRecording : startRecording}
-//           disabled={!isFaceDetected || faceStatus !== 'good'}
-//         >
-//           <Icon
-//             name={isRecording ? 'stop' : 'videocam'}
-//             size={36}
-//             color={isRecording ? '#fff' : '#f44336'}
-//           />
-//         </TouchableOpacity>
-
-//         <Text style={styles.hintText}>
-//           {isRecording
-//             ? 'Recording... Keep your face still'
-//             : 'Tap to record (15 seconds)'}
-//         </Text>
-//       </View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#000',
-//   },
-//   overlay: {
-//     ...StyleSheet.absoluteFillObject,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   faceGuide: {
-//     width: OVAL_SIZE,
-//     height: OVAL_SIZE,
-//     borderRadius: OVAL_SIZE / 2,
-//     borderWidth: 3,
-//   },
-//   statusContainer: {
-//     position: 'absolute',
-//     top: 80,
-//     backgroundColor: 'rgba(0,0,0,0.7)',
-//     paddingHorizontal: 20,
-//     paddingVertical: 10,
-//     borderRadius: 20,
-//     alignItems: 'center',
-//   },
-//   statusText: {
-//     color: '#fff',
-//     fontSize: 16,
-//     textAlign: 'center',
-//   },
-//   timerContainer: {
-//     position: 'absolute',
-//     top: 140,
-//     backgroundColor: 'rgba(244, 67, 54, 0.9)',
-//     paddingHorizontal: 20,
-//     paddingVertical: 8,
-//     borderRadius: 30,
-//   },
-//   timerText: {
-//     color: '#fff',
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//   },
-//   controls: {
-//     position: 'absolute',
-//     bottom: 0,
-//     left: 0,
-//     right: 0,
-//     alignItems: 'center',
-//   },
-//   recordButton: {
-//     width: 80,
-//     height: 80,
-//     borderRadius: 40,
-//     backgroundColor: '#fff',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     borderWidth: 4,
-//     borderColor: '#f44336',
-//   },
-//   recordingButton: {
-//     backgroundColor: '#f44336',
-//     borderColor: '#fff',
-//   },
-//   hintText: {
-//     color: '#fff',
-//     marginTop: 12,
-//     fontSize: 14,
-//   },
-//   center: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#000',
-//   },
-//   permissionText: {
-//     color: '#fff',
-//     fontSize: 18,
-//     marginBottom: 20,
-//   },
-//   button: {
-//     marginTop: 20,
-//     padding: 15,
-//     backgroundColor: '#2196F3',
-//     borderRadius: 8,
-//   },
-//   buttonText: {
-//     color: '#fff',
-//     fontSize: 16,
-//   },
-// });
-
-// export default FaceVideoRecordingScreen;
-
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Button, StyleSheet, Alert, Linking } from 'react-native';
-import { Camera, useCameraDevices } from 'react-native-vision-camera';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Linking,
+  Dimensions,
+  StatusBar,
+} from 'react-native';
+import {
+  Camera,
+  useCameraDevice,
+  useCameraPermission,
+  useMicrophonePermission,
+  useCameraFormat,
+} from 'react-native-vision-camera';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+
+const { width } = Dimensions.get('window');
+const CAMERA_SIZE = width - 48;
+
+const DURATIONS = [
+  { label: '15s', sub: 'Quick', value: 15 },
+  { label: '30s', sub: 'Standard', value: 30 },
+  { label: '60s', sub: 'Deep', value: 60 },
+];
+
+const TODAY_PROMPT = '"How is your body feeling right now?"';
 
 export default function FaceVideoRecordingScreen() {
-  const [hasPermission, setHasPermission] = useState(false);
+  const navigation = useNavigation();
   const [recording, setRecording] = useState(false);
-  const [countdown, setCountdown] = useState(15);
+  const [countdown, setCountdown] = useState(30);
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [selectedDuration, setSelectedDuration] = useState(30);
 
-  const devices = useCameraDevices();
-  const device = devices.back;
+  const { hasPermission: hasCameraPermission, requestPermission: requestCameraPermission } = useCameraPermission();
+  const { hasPermission: hasMicPermission, requestPermission: requestMicPermission } = useMicrophonePermission();
+
+  const device = useCameraDevice('front');
+  const format = useCameraFormat(device, [
+    { videoResolution: { width: 1280, height: 720 } },
+    { fps: 30 },
+    { videoAspectRatio: 16 / 9 },
+  ]);
+
   const cameraRef = useRef(null);
   const timerRef = useRef(null);
-
-  // Request camera and microphone permissions
-  // useEffect(() => {
-  //   async function requestPermissions() {
-  //     const cam = await Camera.requestCameraPermission();
-  //     const mic = await Camera.requestMicrophonePermission();
-  //     if (cam === 'authorized' && mic === 'authorized') {
-  //       setHasPermission(true);
-  //     } else {
-  //       Alert.alert('Permissions not granted');
-  //     }
-  //   }
-  //   requestPermissions();
-  // }, []);
-
-  // useEffect(() => {
-  //   async function requestPermissions() {
-  //     try {
-  //       const cameraStatus = await Camera.requestCameraPermission();
-  //       const micStatus = await Camera.requestMicrophonePermission();
-
-  //       console.log('Camera Permission:', cameraStatus);
-  //       console.log('Microphone Permission:', micStatus);
-
-  //       const isAuthorized = (status) => status === 'authorized' || status === 'granted';
-
-  //       if (isAuthorized(cameraStatus) && isAuthorized(micStatus)) {
-  //         setHasPermission(true);
-  //       } else {
-  //         Alert.alert(
-  //           'Permission Required',
-  //           'Camera and Microphone permissions are required to record video.\n\nPlease grant them from Settings.',
-  //           [
-  //             { text: 'Cancel' },
-  //             {
-  //               text: 'Open Settings',
-  //               onPress: () => Linking.openSettings()
-  //             }
-  //           ]
-  //         );
-  //       }
-  //     } catch (err) {
-  //       console.error('Permission request error:', err);
-  //       Alert.alert('Error', 'Failed to request permissions');
-  //     }
-  //   }
-
-  //   requestPermissions();
-  // }, []);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    async function requestPermissions() {
-      try {
-        const cameraStatus = await Camera.requestCameraPermission();
-        const micStatus = await Camera.requestMicrophonePermission();
-
-        console.log('Camera Permission Status:', cameraStatus);
-        console.log('Microphone Permission Status:', micStatus);
-
-        // Vision Camera mein 'authorized' ya 'granted' dono possible hain
-        const isAuthorized = (status) =>
-          status === 'authorized' || status === 'granted';
-
-        if (isAuthorized(cameraStatus) && isAuthorized(micStatus)) {
-          setHasPermission(true);
-        } else {
-          Alert.alert(
-            'Permissions Required',
-            'Camera and Microphone access is needed to record video.\n\nPlease allow them from Settings.',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              {
-                text: 'Open Settings',
-                onPress: () => Linking.openSettings()
-              },
-            ]
-          );
-        }
-      } catch (error) {
-        console.error('Permission Error:', error);
-        Alert.alert('Error', 'Something went wrong while requesting permissions');
-      }
-    }
-
+    const requestPermissions = async () => {
+      if (!hasCameraPermission) await requestCameraPermission();
+      if (!hasMicPermission) await requestMicPermission();
+    };
     requestPermissions();
+  }, [hasCameraPermission, hasMicPermission]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, []);
 
-  // Start recording with 15-sec limit and countdown
+  const hasAllPermissions = hasCameraPermission && hasMicPermission;
+
   const recordVideo = async () => {
-    if (!cameraRef.current || recording) return;
+    if (!cameraRef.current || recording || !device) return;
 
     setRecording(true);
-    setCountdown(15);
+    setCountdown(selectedDuration);
 
-    // Countdown timer
     timerRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -601,69 +83,374 @@ export default function FaceVideoRecordingScreen() {
       });
     }, 1000);
 
-    // Start recording
-    cameraRef.current.startRecording({
-      flash: 'off',
-      onRecordingFinished: (video) => {
-        console.log('Video saved at:', video.path);
-        setRecording(false);
-      },
-      onRecordingError: (error) => {
-        console.error(error);
-        setRecording(false);
-      },
-    });
+    try {
+      await cameraRef.current.startRecording({
+        flash: 'off',
+        onRecordingFinished: (video) => {
+          console.log('✅ Video saved:', video.path);
+          clearInterval(timerRef.current);
+          setRecording(false);
+          setCountdown(selectedDuration);
 
-    // Stop recording after 15 seconds
-    setTimeout(() => {
-      cameraRef.current.stopRecording();
+          navigation.navigate('VideoResult', { videoPath: video.path });
+        },
+        onRecordingError: (error) => {
+          console.error('Recording Error:', error);
+          clearInterval(timerRef.current);
+          setRecording(false);
+          setCountdown(selectedDuration);
+          Alert.alert('Recording Failed', error.message);
+        },
+      });
+
+      setTimeout(() => {
+        if (cameraRef.current) cameraRef.current.stopRecording();
+      }, selectedDuration * 1000);
+    } catch (error) {
+      console.error('Start Recording Error:', error);
       clearInterval(timerRef.current);
-    }, 15000);
+      setRecording(false);
+    }
   };
 
-  if (!device || !hasPermission) return null;
+  if (!hasAllPermissions) {
+    return (
+      <View style={[styles.centerContainer, { paddingTop: insets.top }]}>
+        <Text style={styles.loadingText}>Camera & Microphone{'\n'}Permissions Required</Text>
+        <TouchableOpacity style={styles.settingsBtn} onPress={() => Linking.openSettings()}>
+          <Text style={styles.settingsBtnText}>Open Settings</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  if (!device) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.loadingText}>No Front Camera Found</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={{ flex: 1 }}>
-      <Camera
-        ref={cameraRef}
-        style={{ flex: 1 }}
-        device={device}
-        isActive={true}
-        video={true}
-        audio={true}
-      />
-      {recording && (
-        <View style={styles.countdownContainer}>
-          <Text style={styles.countdownText}>{countdown}</Text>
+    <View style={[styles.container, { paddingTop: insets.top + 10 }]}>
+      <StatusBar barStyle="light-content" backgroundColor="#1C1A17" />
+
+      {/* Camera Viewfinder */}
+      <View style={styles.cameraWrapper}>
+        {/* Corner Brackets */}
+        <View style={[styles.corner, styles.cornerTL]} />
+        <View style={[styles.corner, styles.cornerTR]} />
+        <View style={[styles.corner, styles.cornerBL]} />
+        <View style={[styles.corner, styles.cornerBR]} />
+
+        {device ? (
+          <Camera
+            ref={cameraRef}
+            style={StyleSheet.absoluteFill}
+            device={device}
+            format={format}
+            isActive={true}
+            video={true}
+            audio={true}
+            fps={30}
+            pixelFormat="yuv"
+            onInitialized={() => setIsCameraReady(true)}
+            onError={(error) => console.error('Camera Error:', error)}
+          />
+        ) : null}
+
+        {/* Camera not ready overlay */}
+        {!isCameraReady && (
+          <View style={styles.cameraLoadingOverlay}>
+            <Text style={styles.cameraLoadingText}>me.</Text>
+          </View>
+        )}
+
+        {/* REC indicator */}
+        {recording && (
+          <View style={styles.recBadge}>
+            <View style={styles.recDot} />
+            <Text style={styles.recText}>REC</Text>
+          </View>
+        )}
+
+        {/* Countdown overlay */}
+        {recording && (
+          <View style={styles.countdownOverlay}>
+            <Text style={styles.countdownText}>{countdown}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Duration Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionLabel}>DURATION</Text>
+        <View style={styles.durationRow}>
+          {DURATIONS.map((d) => {
+            const isSelected = selectedDuration === d.value;
+            return (
+              <TouchableOpacity
+                key={d.value}
+                style={[styles.durationBtn, isSelected && styles.durationBtnActive]}
+                onPress={() => {
+                  if (!recording) {
+                    setSelectedDuration(d.value);
+                    setCountdown(d.value);
+                  }
+                }}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.durationValue, isSelected && styles.durationValueActive]}>
+                  {d.label}
+                </Text>
+                <Text style={[styles.durationSub, isSelected && styles.durationSubActive]}>
+                  {d.sub}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
-      )}
+      </View>
+
+      {/* Today's Prompt */}
+      <View style={styles.promptCard}>
+        <Text style={styles.promptLabel}>TODAY PROMPT</Text>
+        <Text style={styles.promptText}>{TODAY_PROMPT}</Text>
+      </View>
+
+      {/* Record Button */}
       {!recording && (
-        <View style={styles.buttonContainer}>
-          <Button title="Record 15 sec" onPress={recordVideo} />
-        </View>
+        <TouchableOpacity
+          style={styles.recordBtn}
+          onPress={recordVideo}
+          activeOpacity={0.85}
+        >
+          <View style={styles.recordBtnInner} />
+        </TouchableOpacity>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  countdownContainer: {
-    position: 'absolute',
-    top: 50,
+  container: {
+    flex: 1,
+    backgroundColor: '#1C1A17',
+    paddingHorizontal: 24,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1C1A17',
+    gap: 20,
+    padding: 24,
+  },
+  loadingText: {
+    color: '#EEE8DF',
+    fontSize: 18,
+    textAlign: 'center',
+    lineHeight: 28,
+  },
+  settingsBtn: {
+    backgroundColor: '#3D6B4F',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 30,
+  },
+  settingsBtnText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
+  // Camera
+  cameraWrapper: {
+    width: CAMERA_SIZE,
+    height: CAMERA_SIZE,
     alignSelf: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    padding: 15,
-    borderRadius: 50,
+    borderRadius: 6,
+    overflow: 'hidden',
+    backgroundColor: '#0D0C0A',
+    marginBottom: 28,
+    position: 'relative',
+  },
+  cameraLoadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0D0C0A',
+  },
+  cameraLoadingText: {
+    color: '#2C4A35',
+    fontSize: 52,
+    fontWeight: '700',
+    letterSpacing: 2,
+  },
+
+  // Corner brackets
+  corner: {
+    position: 'absolute',
+    width: 22,
+    height: 22,
+    zIndex: 10,
+  },
+  cornerTL: {
+    top: 14,
+    left: 14,
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderColor: '#EEE8DF',
+  },
+  cornerTR: {
+    top: 14,
+    right: 14,
+    borderTopWidth: 2,
+    borderRightWidth: 2,
+    borderColor: '#EEE8DF',
+  },
+  cornerBL: {
+    bottom: 14,
+    left: 14,
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
+    borderColor: '#EEE8DF',
+  },
+  cornerBR: {
+    bottom: 14,
+    right: 14,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+    borderColor: '#EEE8DF',
+  },
+
+  // REC badge
+  recBadge: {
+    position: 'absolute',
+    top: 16,
+    left: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    zIndex: 20,
+  },
+  recDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#C0552A',
+  },
+  recText: {
+    color: '#EEE8DF',
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+  },
+
+  // Countdown
+  countdownOverlay: {
+    position: 'absolute',
+    bottom: 16,
+    alignSelf: 'center',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 20,
   },
   countdownText: {
-    fontSize: 40,
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#EEE8DF',
+    fontSize: 32,
+    fontWeight: '300',
+    letterSpacing: 2,
+    opacity: 0.85,
   },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 50,
+
+  // Duration
+  section: {
+    marginBottom: 16,
+  },
+  sectionLabel: {
+    color: '#8A8575',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.8,
+    marginBottom: 12,
+  },
+  durationRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  durationBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 6,
+    alignItems: 'center',
+    backgroundColor: '#2A2720',
+    borderWidth: 1,
+    borderColor: '#3A3730',
+  },
+  durationBtnActive: {
+    backgroundColor: '#C0552A',
+    borderColor: '#C0552A',
+  },
+  durationValue: {
+    color: '#8A8575',
+    fontSize: 18,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  durationValueActive: {
+    color: '#fff',
+  },
+  durationSub: {
+    color: '#5A5650',
+    fontSize: 11,
+    marginTop: 3,
+    letterSpacing: 0.3,
+  },
+  durationSubActive: {
+    color: '#F0E8E0',
+  },
+
+  // Prompt
+  promptCard: {
+    backgroundColor: '#2A2720',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#3A3730',
+    padding: 18,
+    marginBottom: 28,
+  },
+  promptLabel: {
+    color: '#8A8575',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1.8,
+    marginBottom: 8,
+  },
+  promptText: {
+    color: '#C4B89A',
+    fontSize: 15,
+    fontStyle: 'italic',
+    lineHeight: 22,
+  },
+
+  // Record button
+  recordBtn: {
     alignSelf: 'center',
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    borderWidth: 3,
+    borderColor: '#EEE8DF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  recordBtnInner: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#C0552A',
   },
 });

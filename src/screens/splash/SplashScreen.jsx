@@ -9,7 +9,7 @@ import {
     Dimensions,
     Image
 } from 'react-native';
-import bodymy from '../../assets/images/bodymy.png'
+import bodymy from '../../assets/images/logoOne.png'
 
 const { width, height } = Dimensions.get('window');
 
@@ -98,13 +98,13 @@ export default function SplashScreen({ navigation }) {
                 >
                     <Image
                         source={bodymy}
-                        style={{ width: width * 0.9, height: height * 0.1 }}
+                        style={{ width: width * 0.4, height: height * 0.2 }}
                     />
                 </Animated.View>
             </Animated.View>
 
             {/* Bottom Branding */}
-            {/* <Text style={styles.version}>v1.0 • Premium Fitness</Text> */}
+            <Text style={styles.version}>v1.0 • Premium Fitness</Text>
         </View>
     );
 }
@@ -112,7 +112,7 @@ export default function SplashScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000',
+        backgroundColor: '#EEE8DF',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative'

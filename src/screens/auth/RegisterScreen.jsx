@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   StatusBar,
@@ -13,16 +12,16 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import { AppleButton, appleAuth } from '@invertase/react-native-apple-authentication';
+import Button from '../../components/common/Button';
+import googleIcons from "../../assets/icon/flat-color-icons_google.png";
+import Input from '../../components/common/Input';
 
 const RegisterScreen = () => {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordTwo, setPasswordTwo] = useState('');
-  const [showPasswordTwo, setShowPasswordTwo] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const navigation = useNavigation();
 
   const handleLogin = () => {
@@ -48,7 +47,7 @@ const RegisterScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -59,50 +58,83 @@ const RegisterScreen = () => {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Back arrow - top left */}
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Icon name="chevron-left" size={32} color="#CDFF00" />
-          </TouchableOpacity>
-
           {/* Header text */}
           <View style={styles.header}>
             <Text style={styles.title}>
-              Hello!
+              Create your
             </Text>
             <Text style={styles.subtitle}>
-              Register to get started.
+              account.
             </Text>
+          </View>
+
+          <View>
+            <Button
+              text={"Continue with Apple"}
+              touchableStyle={styles.appleBtn}
+              textStyle={styles.appleBtnText}
+              viewStyle={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4 }}
+              handleSubmit={() => console.log("is working")} isLoading={false} showIsLoading={false}
+              iconName={"logo-apple"}
+              iconColor={"#1E1A14"}
+            />
+            <Button
+              text={"Continue with Google"}
+              touchableStyle={styles.appleBtn}
+              textStyle={styles.appleBtnText}
+              viewStyle={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4 }}
+              handleSubmit={() => console.log("is working")} isLoading={false} showIsLoading={false}
+              imageName={googleIcons}
+              iconColor={"transparent"}
+            />
+          </View>
+
+          <View style={styles.orContainer}>
+            <View style={styles.line} />
+            <Text style={styles.orText}>or</Text>
+            <View style={styles.line} />
           </View>
 
           {/* Inputs */}
           <View style={styles.form}>
-            <TextInput
-              style={[styles.input, { marginBottom: 16 }]}
-              placeholder="Username"
-              placeholderTextColor="#666"
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="none"
-            />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <View style={{ flex: 1, marginRight: 10 }}>
+                <Text style={{ color: "#727272", marginBottom: 5, fontFamily: "sans-serif", letterSpacing: 1, textTransform: "uppercase" }}>First Name</Text>
+                <Input
+                  placeholder="First Name"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  styles={{ input: [styles.input, { marginBottom: 16 }], inputActive: styles.inputActive }}
+                />
+              </View>
 
-            <TextInput
-              style={[styles.input, { marginBottom: 16 }]}
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: "#727272", marginBottom: 5, fontFamily: "sans-serif", letterSpacing: 1, textTransform: "uppercase" }}>Last Name</Text>
+                <Input
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChangeText={setLastName}
+                  styles={{ input: [styles.input, { marginBottom: 16 }], inputActive: styles.inputActive }}
+                />
+              </View>
+            </View>
+
+            <Text style={{ color: "#727272", marginBottom: 5, fontFamily: "sans-serif", letterSpacing: 1, textTransform: "uppercase" }}>Email</Text>
+            <Input
               placeholder="Email"
-              placeholderTextColor="#666"
               value={email}
               onChangeText={setEmail}
-              autoCapitalize="none"
+              styles={{ input: [styles.input, { marginBottom: 16 }], inputActive: styles.inputActive }}
             />
 
             <View style={[styles.passwordWrapper, { marginBottom: 16 }]}>
-              <TextInput
-                style={styles.input}
+              <Text style={{ color: "#727272", marginBottom: 5, fontFamily: "sans-serif", letterSpacing: 1, textTransform: "uppercase" }}>Password</Text>
+              <Input
                 placeholder="Password"
-                placeholderTextColor="#666"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
-                autoCapitalize="none"
+                styles={{ input: [styles.input, { marginBottom: 16 }], inputActive: styles.inputActive }}
               />
               <TouchableOpacity
                 style={styles.eye}
@@ -116,44 +148,9 @@ const RegisterScreen = () => {
               </TouchableOpacity>
             </View>
 
-            <View style={[styles.passwordWrapper]}>
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm password"
-                placeholderTextColor="#666"
-                value={passwordTwo}
-                onChangeText={setPasswordTwo}
-                secureTextEntry={!showPasswordTwo}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity
-                style={styles.eye}
-                onPress={() => setShowPasswordTwo(!showPasswordTwo)}
-              >
-                <Icon
-                  name={showPasswordTwo ? 'eye' : 'eye-off'}
-                  size={24}
-                  color="#888"
-                />
-              </TouchableOpacity>
-            </View>
-
-            {/* Remember + Forgot */}
-            <View style={[styles.options]}>
-              <TouchableOpacity
-                style={styles.rememberRow}
-                onPress={() => setRememberMe(!rememberMe)}
-              >
-                <View style={[styles.checkbox, rememberMe && styles.checked]}>
-                  {rememberMe && <Icon name="check" size={16} color="#000" />}
-                </View>
-                <Text style={styles.rememberText}>I agree to Terms and Privacy Policy</Text>
-              </TouchableOpacity>
-            </View>
-
             {/* Login Button */}
-            <TouchableOpacity style={{ paddingVertical: 16, borderRadius: 15, alignItems: 'center', backgroundColor: '#CDFF00', fontSize: "15px" }} onPress={handleLogin}>
-              <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold' }}>
+            <TouchableOpacity style={styles.signUpBtn} onPress={() => console.log("is working")}>
+              <Text style={styles.btnText}>
                 Sign Up
               </Text>
             </TouchableOpacity>
@@ -173,10 +170,10 @@ const RegisterScreen = () => {
               <Text style={styles.footerText}>
                 Already have an account?{' '}
                 <Text
-                  style={styles.register}
+                  style={styles.signNow}
                   onPress={() => navigation.navigate('Login')}
                 >
-                  Login Now
+                  Sign Now
                 </Text>
               </Text>
             </View>
@@ -190,35 +187,22 @@ const RegisterScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#EEE8DF',
     paddingHorizontal: 24,
   },
-  backBtn: {
-    position: 'absolute',
-    top: 27,
-    left: 6,
-    zIndex: 10,
-    borderColor: "#CDFF00",
-    borderWidth: 1,
-    borderRadius: 13,
-    padding: 5,
-  },
   header: {
-    marginTop: 100,
-    marginBottom: 30,
+    marginVertical: 20,
     marginHorizontal: 5,
   },
   title: {
     fontSize: 35,
-    fontWeight: 'bold',
-    color: '#CDFF00',
-    lineHeight: 38
+    color: '#151515',
+    fontFamily: 'PlayfairDisplay-Bold',
   },
   subtitle: {
     fontSize: 35,
-    fontWeight: 'bold',
-    color: '#fff',
-    fontFamily: "Gabarito",
+    color: '#3D6B4F',
+    fontFamily: 'PlayfairDisplay-Bold',
     lineHeight: 38
   },
   form: {
@@ -226,14 +210,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F7F3EE',
     borderWidth: 1,
-    borderColor: '#F4F4F4',
-    borderRadius: 15,
+    borderColor: '#C4B89A',
+    borderRadius: 10,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 16,
     fontSize: 16,
     color: '#666',
+  },
+  inputActive: {
+    backgroundColor: '#fff',   // 🔥 change when typing
+    borderColor: '#000',       // optional highlight
   },
   passwordWrapper: {
     position: 'relative',
@@ -241,59 +229,33 @@ const styles = StyleSheet.create({
   eye: {
     position: 'absolute',
     right: 12,
-    top: 1.5,
+    top: 29,
     paddingVertical: 10,
     paddingHorizontal: 10,
   },
-  options: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  rememberRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 2,
-    borderWidth: 1.5,
-    borderColor: '#888',
-    marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checked: {
-    backgroundColor: '#CDFF00',
-    borderColor: '#CDFF00',
-  },
-  rememberText: {
-    color: '#ddd',
-    fontSize: 14,
-  },
-  forgot: {
-    color: '#CDFF00',
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  loginBtn: {
-    backgroundColor: '#CDFF00',
+  signUpBtn: {
+    backgroundColor: '#3D6B4F',
     borderRadius: 50,
     paddingVertical: 18,
     alignItems: 'center',
     marginBottom: 24
   },
   btnText: {
-    color: '#000',
+    color: '#EEE8DF',
     fontSize: 18,
     fontWeight: 'bold',
   },
   appleBtn: {
-    height: 54,
-    marginBottom: 40,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 50,
+    paddingVertical: 18,
+    alignItems: 'center',
+    marginVertical: 10
+  },
+  appleBtnText: {
+    color: '#000',
+    fontSize: 15,
+    fontFamily: 'sans-serif-medium',
   },
   footer: {
     justifyContent: "flex-end",
@@ -303,11 +265,29 @@ const styles = StyleSheet.create({
   },
   footerText: {
     color: '#888',
-    fontSize: 17,
+    fontSize: 16,
   },
-  register: {
-    color: '#CDFF00',
+  signNow: {
+    color: '#3D6B4F',
     fontWeight: 'bold',
+  },
+  orContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    width: '100%',
+    maxWidth: 360,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#DADCE0',
+  },
+  orText: {
+    marginHorizontal: 16,
+    fontSize: 17,
+    color: '#70757A',
+    fontWeight: '400',
   },
 });
 

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   StatusBar,
   ActivityIndicator,
+  Keyboard
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -15,13 +16,14 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Toast from 'react-native-toast-message';
 import { AuthContext } from '../../context/AuthContext';
+import Button from '../../components/common/Button';
+import googleIcons from "../../assets/icon/flat-color-icons_google.png";
 import LoadingModal from '../../components/common/LoadingModal';
 // import { AppleButton, appleAuth } from '@invertase/react-native-apple-authentication';
 
 const LoginScreen = () => {
   const { login } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,6 +33,7 @@ const LoginScreen = () => {
   });
 
   const handleLogin = async (values) => {
+    Keyboard.dismiss();
     setIsLoading(true);
     const email = values.email.trim();
     const password = values.password;
@@ -40,13 +43,8 @@ const LoginScreen = () => {
         type: 'custom_error',
         text1: 'Login Failed',
         text2: 'Email is incorrect 👎',
-        props: {
-          text1Style: { fontSize: 18 },
-          text2Style: { fontSize: 15, color: '#000' },
-          indicator: { backgroundColor: 'red' }
-        },
+        visibilityTime: 3000,
         position: 'top',
-        visibilityTime: 2500,
       });
       setIsLoading(false);
       return;
@@ -57,13 +55,8 @@ const LoginScreen = () => {
         type: 'custom_error',
         text1: 'Login Failed',
         text2: 'Password is incorrect 👎',
-        props: {
-          text1Style: { fontSize: 18 },
-          text2Style: { fontSize: 15, color: '#000' },
-          indicator: { backgroundColor: 'red' }
-        },
+        visibilityTime: 3000,
         position: 'top',
-        visibilityTime: 2500,
       });
       setIsLoading(false);
       return;
@@ -74,19 +67,13 @@ const LoginScreen = () => {
       await login("123456789875");
       setIsLoading(false);
       Toast.show({
-        type: 'custom_error',
-        text1: 'Login Successful',
-        text2: `Welcome back, ${email}!`,
-        props: {
-          text1Style: { fontSize: 18 },
-          text2Style: { fontSize: 15, color: '#000' },
-          indicator: { backgroundColor: '#1bdf0a' }
-        },
+        type: 'custom_success',
+        text1: 'Login Successfull',
+        text2: 'Welcome to dashbaord',
+        visibilityTime: 3000,
         position: 'top',
-        visibilityTime: 2500,
       });
     }, 2000);
-    // setIsLoading(false);
   };
 
   // const handleAppleSignIn = async () => {
@@ -108,7 +95,7 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
 
       {/* Header text */}
       <View style={styles.header}>
@@ -116,8 +103,35 @@ const LoginScreen = () => {
           Welcome back!
         </Text>
         <Text style={styles.subtitle}>
-          Glad to see you, Again!
+          this is <Text style={{ color: "#3D6B4F" }}>me.</Text>
         </Text>
+      </View>
+
+      <View>
+        <Button
+          text={"Continue with Apple"}
+          touchableStyle={styles.appleBtn}
+          textStyle={styles.appleBtnText}
+          viewStyle={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4 }}
+          handleSubmit={() => console.log("is working")} isLoading={false} showIsLoading={false}
+          iconName={"logo-apple"}
+          iconColor={"#1E1A14"}
+        />
+        <Button
+          text={"Continue with Google"}
+          touchableStyle={styles.appleBtn}
+          textStyle={styles.appleBtnText}
+          viewStyle={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 4 }}
+          handleSubmit={() => console.log("is working")} isLoading={false} showIsLoading={false}
+          imageName={googleIcons}
+          iconColor={"transparent"}
+        />
+      </View>
+
+      <View style={styles.orContainer}>
+        <View style={styles.line} />
+        <Text style={styles.orText}>or</Text>
+        <View style={styles.line} />
       </View>
 
       {/* Formik form */}
@@ -129,6 +143,7 @@ const LoginScreen = () => {
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
           <View style={styles.form}>
             {/* Email */}
+            <Text style={{ color: "#727272", marginBottom: 5, fontFamily: "sans-serif", letterSpacing: 1, textTransform: "capitalize" }}>email</Text>
             <TextInput
               style={[styles.input, { marginBottom: 8 }]}
               placeholder="Enter email"
@@ -144,7 +159,8 @@ const LoginScreen = () => {
             )}
 
             {/* Password */}
-            <View style={[styles.passwordWrapper, { marginBottom: 8 }]}>
+            <View style={[styles.passwordWrapper]}>
+              <Text style={{ color: "#727272", marginBottom: 5, fontFamily: "sans-serif", letterSpacing: 1, textTransform: "capitalize" }}>Password</Text>
               <TextInput
                 style={styles.input}
                 placeholder="Enter password"
@@ -171,17 +187,7 @@ const LoginScreen = () => {
             )}
 
             {/* Remember + Forgot */}
-            <View style={styles.options}>
-              <TouchableOpacity
-                style={styles.rememberRow}
-                onPress={() => setRememberMe(!rememberMe)}
-              >
-                <View style={[styles.checkbox, rememberMe && styles.checked]}>
-                  {rememberMe && <Icon name="check" size={16} color="#000" />}
-                </View>
-                <Text style={styles.rememberText}>Remember me</Text>
-              </TouchableOpacity>
-
+            <View>
               <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
                 <Text style={styles.forgot}>Forgot Password?</Text>
               </TouchableOpacity>
@@ -197,7 +203,7 @@ const LoginScreen = () => {
                 <Text style={styles.btnText}>Login</Text>
                 {isLoading && (
                   <ActivityIndicator
-                    color="#000"
+                    color="#EEE8DF"
                     size="small"
                     style={{ marginLeft: 10 }}
                   />
@@ -213,8 +219,8 @@ const LoginScreen = () => {
                   style={styles.appleBtn}
                   onPress={handleAppleSignIn}
                 />
-              )}
-            */}
+              )} */}
+
 
             {/* Footer */}
             <View style={styles.footer}>
@@ -244,37 +250,23 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#EEE8DF',
     paddingHorizontal: 24,
   },
-  backBtn: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 10,
-    borderColor: "#CDFF00",
-    borderWidth: 1,
-    borderRadius: 13,
-    padding: 5,
-
-    marginHorizontal: 5
-  },
   header: {
-    marginTop: 120,
-    marginBottom: 60,
+    marginVertical: 10,
     marginHorizontal: 5,
   },
   title: {
-    fontSize: 35,
-    fontWeight: 'bold',
-    color: '#CDFF00',
-    lineHeight: 38
+    marginTop: 20,
+    fontSize: 17,
+    color: '#727272',
+    fontFamily: 'sans-serif',
   },
   subtitle: {
     fontSize: 35,
-    fontWeight: 'bold',
-    color: '#fff',
-    fontFamily: "Gabarito",
+    color: '#1E1A14',
+    fontFamily: 'PlayfairDisplay-Bold',
     lineHeight: 38
   },
   form: {
@@ -282,12 +274,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F7F3EE',
     borderWidth: 1,
-    borderColor: '#F4F4F4',
-    borderRadius: 15,
+    borderColor: '#C4B89A',
+    borderRadius: 10,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 16,
     fontSize: 16,
     color: '#666',
   },
@@ -299,58 +291,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     position: 'absolute',
     right: 12,
-    top: 1.5,
-  },
-  options: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 25,
-  },
-  rememberRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 2,
-    borderWidth: 1.5,
-    borderColor: '#888',
-    marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checked: {
-    backgroundColor: '#CDFF00',
-    borderColor: '#CDFF00',
-  },
-  rememberText: {
-    color: '#ddd',
-    fontSize: 15,
+    top: 29,
   },
   forgot: {
-    color: '#CDFF00',
+    color: '#3D6B4F',
     fontSize: 16,
-    fontWeight: '600',
-    paddingVertical: 10,
+    fontFamily: 'sans-serif',
+    textAlign: "right",
+    paddingVertical: 10
   },
   loginBtn: {
-    backgroundColor: '#CDFF00',
+    backgroundColor: '#3D6B4F',
     borderRadius: 50,
     paddingVertical: 18,
     alignItems: 'center',
     marginBottom: 24
   },
-  btnText: {
+  appleBtn: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 50,
+    paddingVertical: 18,
+    alignItems: 'center',
+    marginVertical: 10
+  },
+  appleBtnText: {
     color: '#000',
+    fontSize: 15,
+    fontFamily: 'sans-serif-medium',
+  },
+  btnText: {
+    color: '#EEE8DF',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  appleBtn: {
-    height: 54,
-    marginBottom: 40,
   },
   footer: {
     justifyContent: "flex-end",
@@ -360,16 +332,34 @@ const styles = StyleSheet.create({
   },
   footerText: {
     color: '#888',
-    fontSize: 17,
+    fontSize: 16,
   },
   register: {
-    color: '#CDFF00',
+    color: '#3D6B4F',
     fontWeight: 'bold',
   },
   errorText: {
     color: '#FF4D4D',
     fontSize: 14,
     marginBottom: 10
+  },
+  orContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    width: '100%',
+    maxWidth: 360,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#DADCE0',
+  },
+  orText: {
+    marginHorizontal: 16,
+    fontSize: 17,
+    color: '#70757A',
+    fontWeight: '400',
   },
 });
 
