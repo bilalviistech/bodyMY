@@ -16,6 +16,8 @@ import FaceVideoRecordingScreen from '../screens/home/FaceVideoRecordingScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 import Trends from '../screens/home/Trends';
 import WellnessScoreResult from '../screens/home/WellnessScoreResult'
+import ProfileStack from '../navigation/ProfileStack'
+import InsightStack from '../navigation/InsightStack'
 
 const Tab = createBottomTabNavigator();
 
@@ -62,7 +64,8 @@ const CustomTabBar = ({ state, navigation }) => {
                 </TouchableOpacity>
 
                 {/* Me */}
-                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Profile')}>
+                {/* <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Profile')}> */}
+                <TouchableOpacity style={styles.tabItem} onPress={() => navigation.navigate('Profile', { screen: 'ProfileScreen' })}>
                     <View style={[styles.iconBorder, { backgroundColor: state.index === 4 ? '#3D6B4F' : 'transparent' }]}>
                         <Feather name="user" size={24} color={state.index === 4 ? '#fff' : '#8A7E6A'} />
                     </View>
@@ -83,8 +86,11 @@ export default function MainTabNavigator() {
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Trends" component={Trends} />
             <Tab.Screen name="FaceRecordingScreen" component={FaceVideoRecordingScreen} />
-            <Tab.Screen name="Insight" component={WellnessScoreResult} />
-            <Tab.Screen name="Profile" component={ProfileScreen} />
+            {/* <Tab.Screen name="Insight" component={WellnessScoreResult} /> */}
+            <Tab.Screen name="Insight" component={InsightStack} />
+            {/* <Tab.Screen name="Profile" component={ProfileScreen} /> */}
+            <Tab.Screen name="Profile" component={ProfileStack} />
+            {/* navigation.navigate('Insight', { screen: 'InsightToday' }); */}
         </Tab.Navigator>
     );
 }
@@ -124,7 +130,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: '#F7F3EE',
         height: 90,
-        borderTopWidth: 1,
+        borderTopWidth: 0.5,
         borderTopColor: '#54545865',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: -3 },

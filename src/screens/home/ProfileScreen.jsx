@@ -11,6 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { AuthContext } from '../../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
@@ -18,6 +19,7 @@ const ProfileScreen = () => {
     const insets = useSafeAreaInsets();
     const tabBarHeight = useBottomTabBarHeight();
     const { logout } = useContext(AuthContext);
+    const navigation = useNavigation()
 
     const [dailyReminder, setDailyReminder] = React.useState(true);
     const [highAlerts, setHighAlerts] = React.useState(true);
@@ -82,7 +84,7 @@ const ProfileScreen = () => {
             <View style={styles.accountSection}>
                 <Text style={styles.sectionLabel}>ACCOUNT</Text>
                 <View style={styles.accountCard}>
-                    <TouchableOpacity style={styles.accountItem}>
+                    <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate('SecurityPrivacy')}>
                         <View style={styles.accountItemLeft}>
                             <Text style={styles.accountItemTitle}>Edit Profile</Text>
                             <Text style={styles.accountItemSubtitle}>Name, height, weight, zip</Text>
@@ -92,21 +94,21 @@ const ProfileScreen = () => {
 
                     <View style={styles.divider} />
 
-                    <TouchableOpacity style={styles.accountItem}>
+                    <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate('SecurityPrivacy')}>
                         <Text style={styles.accountItemTitle}>Change password</Text>
                         <Text style={styles.chevron}>›</Text>
                     </TouchableOpacity>
 
                     <View style={styles.divider} />
 
-                    <TouchableOpacity style={styles.accountItem}>
+                    <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate('SecurityPrivacy')}>
                         <Text style={styles.accountItemTitle}>Integrations</Text>
                         <Text style={styles.chevron}>›</Text>
                     </TouchableOpacity>
 
                     <View style={styles.divider} />
 
-                    <TouchableOpacity style={styles.accountItem}>
+                    <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate('SecurityPrivacy')}>
                         <View style={styles.accountItemLeft}>
                             <Text style={styles.accountItemTitle}>Email address</Text>
                             <Text style={styles.accountItemSubtitle}>patrick@thisisme.co</Text>
@@ -120,7 +122,7 @@ const ProfileScreen = () => {
             <View style={styles.accountSection}>
                 <Text style={styles.sectionLabel}>Notification</Text>
                 <View style={styles.accountCard}>
-                    <TouchableOpacity style={styles.notifyItem}>
+                    <TouchableOpacity style={styles.notifyItem} onPress={() => navigation.navigate('DataSources')}>
                         <View style={styles.accountItemLeft}>
                             <Text style={styles.accountItemTitle}>Daily check-in reminder</Text>
                             <Text style={styles.accountItemSubtitle}>9:00 AM daily</Text>
@@ -136,8 +138,8 @@ const ProfileScreen = () => {
 
                     <View style={styles.divider} />
 
-                    <TouchableOpacity style={styles.accountItem}>
-                        <View style={[styles.accountItemLeft, {paddingVertical: 10}]}>
+                    <TouchableOpacity style={styles.accountItem} onPress={() => navigation.navigate('DataSources')}>
+                        <View style={[styles.accountItemLeft, { paddingVertical: 10 }]}>
                             <Text style={styles.accountItemTitle}>high alerts</Text>
                             <Text style={styles.accountItemSubtitle}>patrick@thisisme.co</Text>
                         </View>
@@ -150,7 +152,6 @@ const ProfileScreen = () => {
                     </TouchableOpacity>
 
                     <View style={styles.divider} />
-
                 </View>
             </View>
 
