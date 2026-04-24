@@ -78,6 +78,7 @@ const InitialProfile = () => {
     });
 
     const handleNext = (values) => {
+        Keyboard.dismiss();
         if (!selectedGender) {
             setFieldTouched('gender', true);
             return;
@@ -86,7 +87,6 @@ const InitialProfile = () => {
             setStep(2);
             return;
         } else {
-            Keyboard.dismiss()
             navigation.navigate('MainTabs');
 
         }
@@ -119,6 +119,7 @@ const InitialProfile = () => {
                             heightFt: '',
                             heightIn: '',
                             weightLbs: '',
+                            waist: '',
                             zipCode: '',
                         }}
                         validationSchema={validationSchema}

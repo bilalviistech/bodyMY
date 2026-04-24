@@ -122,6 +122,26 @@ const AboutYourself = ({values, handleChange, handleBlur, selectedGender, setSel
                 </View>
                 {touched.weightLbs && errors.weightLbs && <Text style={styles.errorText}>{errors.weightLbs}</Text>}
 
+                {/* Weight */}
+                <Text style={styles.label}>Waist</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+                    <View style={{ flex: 1 }}>
+                        <Input
+                            placeholder="30"
+                            value={values.waist}
+                            onChangeText={handleChange('waist')}
+                            onBlur={handleBlur('waist')}
+                            styles={{ input: [styles.input], inputActive: styles.inputActive }}
+                            type="numeric"
+                        />
+                    </View>
+
+                    <View>
+                        <Text style={{ color: "#727272", fontFamily: "sans-serif" }}>inch</Text>
+                    </View>
+                </View>
+                {touched.weightLbs && errors.weightLbs && <Text style={styles.errorText}>{errors.weightLbs}</Text>}
+
                 {/* ZIP Code */}
                 <Text style={styles.label}>
                     ZIP code <Text style={{ fontSize: 10 }}>(used for health baselines only)</Text>
