@@ -8,6 +8,7 @@ import {
   Platform,
   KeyboardAvoidingView,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -15,17 +16,30 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Button from '../../components/common/Button';
 import googleIcons from "../../assets/icon/flat-color-icons_google.png";
 import Input from '../../components/common/Input';
+import Toast from 'react-native-toast-message';
 
 const RegisterScreen = () => {
+  const navigation = useNavigation();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    navigation.navigate('VerifyEmail')
+  const handleSignup = () => {
+    setIsLoading(true);
+    setTimeout(async () => {
+      setIsLoading(false);
+      navigation.navigate('Login')
+      Toast.show({
+        type: 'custom_success',
+        text1: 'Register Successfull',
+        text2: 'Now you can login the app to go the dashboard',
+        visibilityTime: 3000,
+        position: 'top',
+      });
+    }, 2000);
   };
 
   // const handleAppleSignIn = async () => {
@@ -47,8 +61,7 @@ const RegisterScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
-
+      <StatusBar barStyle="dark-content" backgroundColor="#EEE8DF" />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -105,6 +118,7 @@ const RegisterScreen = () => {
                   value={firstName}
                   onChangeText={setFirstName}
                   styles={{ input: [styles.input, { marginBottom: 16 }], inputActive: styles.inputActive }}
+                  editable={!isLoading}
                 />
               </View>
 
@@ -115,6 +129,7 @@ const RegisterScreen = () => {
                   value={lastName}
                   onChangeText={setLastName}
                   styles={{ input: [styles.input, { marginBottom: 16 }], inputActive: styles.inputActive }}
+                  editable={!isLoading}
                 />
               </View>
             </View>
@@ -125,6 +140,7 @@ const RegisterScreen = () => {
               value={email}
               onChangeText={setEmail}
               styles={{ input: [styles.input, { marginBottom: 16 }], inputActive: styles.inputActive }}
+              editable={!isLoading}
             />
 
             <View style={[styles.passwordWrapper, { marginBottom: 16 }]}>
@@ -135,6 +151,7 @@ const RegisterScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
                 styles={{ input: [styles.input, { marginBottom: 16 }], inputActive: styles.inputActive }}
+                editable={!isLoading}
               />
               <TouchableOpacity
                 style={styles.eye}
@@ -148,11 +165,21 @@ const RegisterScreen = () => {
               </TouchableOpacity>
             </View>
 
-            {/* Login Button */}
-            <TouchableOpacity style={styles.signUpBtn} onPress={() => console.log("is working")}>
-              <Text style={styles.btnText}>
-                Sign Up
-              </Text>
+            <TouchableOpacity
+              style={styles.loginBtn}
+              onPress={handleSignup}
+              disabled={isLoading}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={styles.btnText}>Sign Up</Text>
+                {isLoading && (
+                  <ActivityIndicator
+                    color="#EEE8DF"
+                    size="small"
+                    style={{ marginLeft: 10 }}
+                  />
+                )}
+              </View>
             </TouchableOpacity>
 
             {/* Apple Button - iOS only */}
@@ -238,7 +265,9 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingVertical: 18,
     alignItems: 'center',
-    marginBottom: 24
+    marginBottom: 24,
+    flexDirection: "row",
+    alignItems: "center"
   },
   btnText: {
     color: '#EEE8DF',
@@ -288,6 +317,13 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: '#70757A',
     fontWeight: '400',
+  },
+  loginBtn: {
+    backgroundColor: '#3D6B4F',
+    borderRadius: 50,
+    paddingVertical: 18,
+    alignItems: 'center',
+    marginBottom: 24
   },
 });
 

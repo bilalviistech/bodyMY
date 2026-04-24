@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TextInput } from 'react-native';
 
-const Input = ({ value, onChangeText, placeholder, autoCapitalize, styles, secureTextEntry, type }) => {
+const Input = ({ value, onChangeText, placeholder, autoCapitalize, styles, secureTextEntry, type, editable = true }) => {
     const [isFocused, setIsFocused] = useState(false);
 
     return (
@@ -16,6 +16,7 @@ const Input = ({ value, onChangeText, placeholder, autoCapitalize, styles, secur
             autoCapitalize={autoCapitalize || 'none'}
             secureTextEntry={secureTextEntry || false}
             keyboardType={type === 'numeric' ? 'numeric' : 'default'}
+            editable={editable}
         />
     )
 }

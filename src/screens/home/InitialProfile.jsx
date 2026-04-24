@@ -1,13 +1,11 @@
 import React, { useContext, useState } from 'react';
 import {
-    View,
-    Text,
-    TouchableOpacity,
     StyleSheet,
     StatusBar,
     Platform,
     KeyboardAvoidingView,
     ScrollView,
+    Keyboard,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -88,6 +86,7 @@ const InitialProfile = () => {
             setStep(2);
             return;
         } else {
+            Keyboard.dismiss()
             navigation.navigate('MainTabs');
 
         }
@@ -104,7 +103,7 @@ const InitialProfile = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
+            <StatusBar barStyle="dark-content" backgroundColor="#EEE8DF" />
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -127,7 +126,6 @@ const InitialProfile = () => {
                     >
                         {({ handleChange, handleBlur, handleSubmit, values, errors, touched, isValid }) => (
                             step === 1 ? (
-
                                 <AboutYourself
                                     values={values}
                                     handleChange={handleChange}

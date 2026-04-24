@@ -95,7 +95,7 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
+      <StatusBar barStyle="dark-content" backgroundColor="#EEE8DF" />
 
       {/* Header text */}
       <View style={styles.header}>
@@ -153,6 +153,7 @@ const LoginScreen = () => {
               onBlur={handleBlur('email')}
               autoCapitalize="none"
               keyboardType="email-address"
+              editable={!isLoading}
             />
             {errors.email && touched.email && (
               <Text style={styles.errorText}>{errors.email}</Text>
@@ -170,6 +171,7 @@ const LoginScreen = () => {
                 onBlur={handleBlur('password')}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
+                editable={!isLoading}
               />
               <TouchableOpacity
                 style={styles.eye}
