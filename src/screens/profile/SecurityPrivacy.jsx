@@ -1,17 +1,36 @@
-import React, { useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Switch } from 'react-native'
+import React, { useContext, useState } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, Switch, ActivityIndicator } from 'react-native'
 import ScreenWrapperForDashboard from '../../components/common/ScreenWrapperForDashboard'
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Input from '../../components/common/Input';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { AuthContext } from '../../context/AuthContext';
+import Toast from 'react-native-toast-message';
 
 const SecurityPrivacy = () => {
     const navigation = useNavigation();
+    const { logout } = useContext(AuthContext);
 
     const [dailyReminder, setDailyReminder] = useState(true);
     const [highAlerts, setHighAlerts] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const logOutHandler = () => {
+        setIsLoading(true);
+        setTimeout(async () => {
+            logout();
+            setIsLoading(false);
+            Toast.show({
+                type: 'custom_success',
+                text1: 'Logout Successfull',
+                text2: 'Thank You!',
+                visibilityTime: 2000,
+                position: 'top',
+            });
+        }, 2000);
+    }
 
     const validationSchema = Yup.object().shape({
         currentPass: Yup.string()
@@ -48,10 +67,6 @@ const SecurityPrivacy = () => {
             <View style={styles.header}>
                 <Text style={styles.title}>security &</Text>
                 <Text style={styles.subtitle}>privacy.</Text>
-
-                <Text style={{ marginVertical: 15, color: "#727272" }}>
-                    Manage connected apps & integrations
-                </Text>
             </View>
 
             {/* Account Card */}
@@ -158,6 +173,22 @@ const SecurityPrivacy = () => {
                     <View style={styles.divider} />
                 </View>
             </View>
+
+            <TouchableOpacity onPress={logOutHandler} disabled={isLoading}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 10  }}>
+                <Text style={{ color: "#B85C38", textAlign: "center", fontSize: 17, fontWeight: '600' }}>Sign out</Text>
+                {isLoading && (
+                    <ActivityIndicator
+                        color="#B85C38"
+                        size="small"
+                        style={{ marginLeft: 10 }}
+                    />
+                )}
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+                <Text style={{ color: "#8A7E6A", textAlign: "center", fontSize: 17, fontWeight: '600', marginBottom: 5 }}>Delete account</Text>
+            </TouchableOpacity>
         </ScreenWrapperForDashboard>
     )
 }
@@ -172,13 +203,13 @@ const styles = StyleSheet.create({
         color: '#151515',
         fontFamily: 'PlayfairDisplay-Bold',
         lineHeight: 37
-
     },
     subtitle: {
         fontSize: 35,
         color: '#3D6B4F',
         fontFamily: 'PlayfairDisplay-Bold',
-        lineHeight: 43
+        lineHeight: 43,
+        marginBottom: 12
     },
     container1: {
         marginTop: 20,

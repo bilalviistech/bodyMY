@@ -47,9 +47,12 @@ export default function VideoResultScreen({ route, navigation }) {
     // Navigate to full results screen
     // navigation.navigate('FullResults');
     console.log('See full results');
-    navigation.navigate('MainTabs', {
-      screen: 'Insight',
-    });
+navigation.navigate('MainTabs', {
+    screen: 'Insight',
+    params: {
+        screen: 'WellnessScoreResult',
+    }
+});
   };
 
   return (

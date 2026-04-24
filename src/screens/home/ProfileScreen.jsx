@@ -7,11 +7,13 @@ import {
     Switch,
     StyleSheet,
     Dimensions,
+    ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
 const { width } = Dimensions.get('window');
 
@@ -23,6 +25,22 @@ const ProfileScreen = () => {
 
     const [dailyReminder, setDailyReminder] = React.useState(true);
     const [highAlerts, setHighAlerts] = React.useState(true);
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const logOutHandler = () => {
+        setIsLoading(true);
+        setTimeout(async () => {
+            logout();
+            setIsLoading(false);
+            Toast.show({
+                type: 'custom_success',
+                text1: 'Logout Successfull',
+                text2: 'Thank You!',
+                visibilityTime: 2000,
+                position: 'top',
+            });
+        }, 2000);
+    }
 
     return (
         <ScrollView
@@ -155,11 +173,20 @@ const ProfileScreen = () => {
                 </View>
             </View>
 
-            <TouchableOpacity
-                onPress={logout}
-                style={{ paddingVertical: 16, borderRadius: 15, alignItems: 'center', backgroundColor: '#e02012', marginVertical: 10 }}
-            >
-                <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold' }}>Logout</Text>
+            <TouchableOpacity onPress={logOutHandler} disabled={isLoading}>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 10  }}>
+                <Text style={{ color: "#B85C38", textAlign: "center", fontSize: 17, fontWeight: '600' }}>Sign out</Text>
+                {isLoading && (
+                    <ActivityIndicator
+                        color="#B85C38"
+                        size="small"
+                        style={{ marginLeft: 10 }}
+                    />
+                )}
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity>
+                <Text style={{ color: "#8A7E6A", textAlign: "center", fontSize: 17, fontWeight: '600', marginBottom: 5 }}>Delete account</Text>
             </TouchableOpacity>
         </ScrollView>
     );

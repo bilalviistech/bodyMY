@@ -119,8 +119,8 @@ const styles = StyleSheet.create({
     },
     bmiValue: {
         fontSize: 48,
-        fontWeight: 'bold',
         marginVertical: 10,
+        fontFamily: 'PlayfairDisplay-Bold',
     },
     barWrapper: {
         marginTop: 10,

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'
 import ScreenWrapperForDashboard from '../../components/common/ScreenWrapperForDashboard'
+import Feather from 'react-native-vector-icons/Feather';
 
 const DURATIONS = [
     { label: '15s', sub: 'Quick', value: 15 },
@@ -17,8 +18,9 @@ const MetricCard = ({ label, value, unit, outOf, trend, trendValue }) => {
             <Text style={styles.unit}>{unit}</Text>
             {outOf && <Text style={styles.outOf}>{outOf}</Text>}
             <View style={styles.trendRow}>
+                {/*  */}
                 <Text style={[styles.trendArrow, isUp ? styles.trendUp : styles.trendDown]}>
-                    {isUp ? '↑' : '↓'}
+                    {isUp ? <Feather name="arrow-up" size={18} color="#3D6B4F" /> : <Feather name="arrow-down" size={18} color="#3D6B4F" />}
                 </Text>
                 <Text style={styles.trendText}>{trendValue}</Text>
             </View>

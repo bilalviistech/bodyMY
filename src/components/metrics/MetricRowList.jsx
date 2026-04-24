@@ -10,12 +10,21 @@ const STATUS_COLORS = {
     Good: { bg: '#C8DDD6', text: '#2E5E4A' },
 };
 
-const MetricRowList = ({ item, rs, isLast, index }) => {
+const MetricRowList = ({ item, rs, isLast, index, pressHandler }) => {
     const colors = STATUS_COLORS[item.status] ?? { bg: '#C8DDD6', text: '#2E5E4A' };
     const isEven = index % 2 === 0;
 
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => 
+            item?.title == 'BMI' ? pressHandler('BMI') : 
+            item?.title == 'ABSI' ? pressHandler('ABSI') :
+            item?.title == 'Mental stress' ? pressHandler('Mental stress') :
+            item?.title == 'HRV' ? pressHandler('HRV') :
+            item?.title == 'WHtR' ? pressHandler('WHtR') :
+            item?.title == 'Heart Rate' ? pressHandler('Heart Rate') :
+            item?.title == 'Facial skin age' ? pressHandler('Facial skin age') :
+            ''}
+        >
             <View style={[st(rs).row, !isLast && st(rs).rowBorder, { backgroundColor: isEven ? '#FAFAF7' : '#F0EDE6' }]}>
                 <View style={st(rs).rowTop}>
                     <Text style={st(rs).title1}>{item.title}</Text>

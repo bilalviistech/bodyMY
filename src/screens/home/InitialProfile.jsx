@@ -85,14 +85,17 @@ const InitialProfile = () => {
             return;
         }
         if (step == 1) {
-            setStep(2)
+            setStep(2);
             return;
+        } else {
+            navigation.navigate('MainTabs');
+
         }
 
-        console.log('Profile data:', {
-            ...values,
-            gender: selectedGender,
-        });
+        // console.log('Profile data:', {
+        //     ...values,
+        //     gender: selectedGender,
+        // });
     };
 
     const navigationHandler = () => {
@@ -153,7 +156,7 @@ const InitialProfile = () => {
                         )}
                     </Formik>
 
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         onPress={logout}
                         style={{ paddingVertical: 16, borderRadius: 15, alignItems: 'center', backgroundColor: '#e02012', marginVertical: 10 }}
                     >
@@ -164,7 +167,7 @@ const InitialProfile = () => {
                         style={{ paddingVertical: 16, borderRadius: 15, alignItems: 'center', backgroundColor: '#e02012', marginVertical: 10 }}
                     >
                         <Text style={{ color: 'black', fontSize: 15, fontWeight: 'bold' }}>Navigate Handler</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>

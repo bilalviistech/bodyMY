@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, useWindowDimensions, PixelRatio } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import Feather from 'react-native-vector-icons/Feather';
 
 const WellnessScoreGauge = ({
     score = 78,
@@ -99,7 +100,7 @@ const WellnessScoreGauge = ({
 
             {/* Trend pill */}
             <View style={st(rs).pill}>
-                <Text style={st(rs).pillArrow}>{trend === 'up' ? '↑' : '↓'}</Text>
+                <Text style={st(rs).pillArrow}>{trend === 'up' ? <Feather name="arrow-up" size={18} color="#3D6B4F" /> : <Feather name="arrow-down" size={18} color="#3D6B4F" />}</Text>
                 <Text style={st(rs).pillText}>{trendText}</Text>
             </View>
         </View>

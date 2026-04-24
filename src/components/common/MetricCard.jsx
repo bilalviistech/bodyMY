@@ -5,6 +5,7 @@ import {
   PixelRatio,
   StyleSheet,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 
 const MetricCard = ({ label, value, unit, trend, trendValue }) => {
   const { width: screenWidth } = useWindowDimensions();
@@ -22,7 +23,7 @@ const MetricCard = ({ label, value, unit, trend, trendValue }) => {
       </View>
       <View style={s.trendRow}>
         <Text style={[s.trendIcon, isUp ? s.trendUp : s.trendDown]}>
-          {isUp ? '↑' : '↓'}
+          {isUp ? <Feather name="arrow-up" size={18} color="#3D6B4F" /> : <Feather name="arrow-down" size={18} color="#3D6B4F" />}
         </Text>
         <Text style={[s.trendText, isUp ? s.trendUp : s.trendDown]}>
           {trendValue}

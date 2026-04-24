@@ -1,34 +1,21 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native'
 
-const WHtRModal = ({ visible, onClose, whtr = 0 }) => {
+const StressModal = ({ visible, onClose, score = 0 }) => {
+
+    // Status logic
     const getStatus = () => {
-        if (whtr > 0.6) return { label: 'High Risk', color: '#C94A3D' };
-        if (whtr >= 0.51) return { label: 'Increased Risk', color: '#C96A3D' };
-        if (whtr >= 0.4) return { label: 'Healthy', color: '#3D6B4F' };
-        return { label: 'Low', color: '#999' };
+        if (score <= 40) return { label: 'Low', color: '#3D6B4F' };
+        if (score <= 70) return { label: 'Moderate', color: '#C9A23D' };
+        return { label: 'High', color: '#C94A3D' };
     };
 
     const status = getStatus();
 
+    // Indicator position (0 → 100 scale)
     const getPosition = () => {
-        let percent = 0;
-
-        if (whtr <= 0.4) {
-            percent = (whtr / 0.4) * 30;
-        }
-        else if (whtr <= 0.51) {
-            percent = 22 + ((whtr - 0.4) / (0.5 - 0.4)) * 30;
-        }
-        else if (whtr <= 0.6) {
-            percent = 44 + ((whtr - 0.5) / (0.6 - 0.5)) * 30;
-        }
-        else {
-            const capped = Math.min(whtr, 1);
-            console.log("capped", capped)
-            percent = 38 + (capped) * 60;
-        }
-        return `${percent}%`;
+        const clamped = Math.max(0, Math.min(score, 100));
+        return `${clamped}%`;
     };
 
     return (
@@ -38,7 +25,7 @@ const WHtRModal = ({ visible, onClose, whtr = 0 }) => {
 
                     {/* Header */}
                     <View style={styles.headerRow}>
-                        <Text style={styles.title}>Waist-to-Height Ratio (WHtR)</Text>
+                        <Text style={styles.title}>Mental stress score</Text>
                         <View style={[styles.badge, { backgroundColor: status.color + '20' }]}>
                             <Text style={[styles.badgeText, { color: status.color }]}>
                                 {status.label}
@@ -46,44 +33,48 @@ const WHtRModal = ({ visible, onClose, whtr = 0 }) => {
                         </View>
                     </View>
 
-                    {/* Value */}
-                    <Text style={styles.value}>{whtr.toFixed(2)}</Text>
+                    {/* Score */}
+                    <Text style={styles.value}>
+                        {score} <Text style={styles.total}>/100</Text>
+                    </Text>
 
                     {/* Progress Bar */}
                     <View style={styles.barWrapper}>
                         <View style={styles.bar}>
-                            <View style={styles.barVeryLow} />
-                            <View style={styles.barLow} />
-                            <View style={styles.barHealthy} />
-                            <View style={styles.barRisk} />
+                            <View style={[styles.segment, { flex: 40, backgroundColor: '#EAF3EE' }]} />
+                            <View style={[styles.segment, { flex: 30, backgroundColor: '#F3EBD8' }]} />
+                            <View style={[styles.segment, { flex: 30, backgroundColor: '#F3D6D3' }]} />
                         </View>
 
+                        {/* Indicator */}
                         <View
                             style={[
                                 styles.indicator,
-                                { left: getPosition(), backgroundColor: status.color }
+                                { left: getPosition(), backgroundColor: '#000' }
                             ]}
                         />
                     </View>
 
                     {/* Labels */}
                     <View style={styles.labelsRow}>
-                        <Text style={styles.label}>to Low</Text>
-                        <Text style={styles.label}>0.4</Text>
-                        <Text style={styles.label}>0.5</Text>
-                        <Text style={styles.label}>0.6</Text>
-                        <Text style={styles.label}>1+</Text>
+                        <Text style={styles.label}>Calm</Text>
+                        <Text style={styles.label}>0</Text>
+                        <Text style={[styles.label, { color: '#3D6B4F' }]}>40</Text>
+                        <Text style={styles.label}>70</Text>
+                        <Text style={styles.label}>High</Text>
                     </View>
 
-                    {/* Info */}
-                    <Text style={styles.rangeText}>
-                        Healthy: &lt; 0.5 • Risk: 0.5–0.6 • High: &gt; 0.6
+                    {/* Description */}
+                    <Text style={styles.desc}>
+                        Low–moderate (0–40 = low stress). You’re in a good range.
                     </Text>
 
+                    {/* Divider */}
                     <View style={styles.divider} />
 
-                    <Text style={styles.infoText}>
-                        WHtR = Waist ÷ Height (same units)
+                    {/* Info */}
+                    <Text style={styles.info}>
+                        Derived from facial micro-expression analysis and vocal stress cues in your check-in recording.
                     </Text>
 
                     {/* Close */}
@@ -128,9 +119,13 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     value: {
-        fontSize: 48,
+        fontSize: 42,
         marginVertical: 10,
         fontFamily: 'PlayfairDisplay-Bold',
+    },
+    total: {
+        fontSize: 24,
+        color: '#555',
     },
     barWrapper: {
         marginTop: 10,
@@ -142,21 +137,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         overflow: 'hidden',
     },
-    barVeryLow: {
-        flex: 9.3,
-        backgroundColor: '#E5E5E5',
-    },
-    barLow: {
-        flex: 6.7,
-        backgroundColor: '#EAF3EE',
-    },
-    barHealthy: {
-        flex: 6.5,
-        backgroundColor: '#F3E1D8',
-    },
-    barRisk: {
-        flex: 8,
-        backgroundColor: '#F3D6D3',
+    segment: {
+        height: '100%',
     },
     indicator: {
         position: 'absolute',
@@ -175,17 +157,17 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#777',
     },
-    rangeText: {
+    desc: {
         marginTop: 10,
-        color: '#C96A3D',
-        fontSize: 13,
+        fontSize: 14,
+        color: '#333',
     },
     divider: {
         height: 1,
         backgroundColor: '#ccc',
         marginVertical: 10,
     },
-    infoText: {
+    info: {
         fontSize: 13,
         color: '#666',
     },
@@ -195,11 +177,8 @@ const styles = StyleSheet.create({
     },
     closeText: {
         color: '#3D6B4F',
-        fontWeight: '700',
-        paddingVertical: 10,
-        fontSize: 16,
-        paddingHorizontal: 20
+        fontWeight: '600',
     },
 });
 
-export default WHtRModal;
+export default StressModal;

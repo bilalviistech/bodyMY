@@ -3,6 +3,11 @@ import { View, Text, StyleSheet, useWindowDimensions, PixelRatio, TouchableOpaci
 import ScreenWrapperForDashboard from '../../components/common/ScreenWrapperForDashboard'
 import BMIModal from '../../components/metrics/BMIModal'
 import WHtRModal from '../../components/metrics/WHtRModal'
+import ABSIModal from '../../components/metrics/ABSIModal'
+import StressModal from '../../components/metrics/StressModal'
+import HRVModal from '../../components/metrics/HRVModal'
+import RHRModal from '../../components/metrics/RHRModal'
+import FacialSkinAgeModal from '../../components/metrics/FacialSkinAgeModal'
 import MetricRowList from '../../components/metrics/MetricRowList'
 
 const METRICS = [
@@ -65,8 +70,14 @@ const METRICS = [
 ];
 
 const AllMetrics = () => {
+    const [activeModal, setActiveModal] = useState(null);
     const [showBMI, setShowBMI] = useState(false);
-    const [showWHtR, setShowWHtR] = useState(false)
+    const [showWHtR, setShowWHtR] = useState(false);
+    const [showABSI, setShowABSI] = useState(false);
+
+    const pressHandler = (val) => {
+        setActiveModal(val)
+    }
 
     const { width: screenWidth } = useWindowDimensions();
     const scale = screenWidth / 375;
@@ -90,25 +101,53 @@ const AllMetrics = () => {
                         rs={rs}
                         isLast={index === METRICS.length - 1}
                         index={index}
+                        pressHandler={pressHandler}
                     />
                 ))}
             </View>
 
-            <TouchableOpacity onPress={() => setShowBMI(true)}><Text>Press me to show BMI</Text></TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowWHtR(true)}><Text>Press me to show WHtR</Text></TouchableOpacity>
-
             <BMIModal
-                visible={showBMI}
+                visible={activeModal === 'BMI'}
                 bmi={25.8}
-                onClose={() => setShowBMI(false)}
+                onClose={() => setActiveModal(null)}
             />
 
             <WHtRModal
-                visible={showWHtR}
+                visible={activeModal === 'WHtR'}
                 whtr={0.47}
-                onClose={() => setShowWHtR(false)}
+                onClose={() => setActiveModal(null)}
             />
-            
+
+            <ABSIModal
+                visible={activeModal === 'ABSI'}
+                absi={0.077}
+                onClose={() => setActiveModal(null)}
+            />
+
+            <StressModal
+                visible={activeModal === 'Mental stress'}
+                score={38}
+                onClose={() => setActiveModal(null)}
+            />
+
+            <HRVModal
+                visible={activeModal === 'HRV'}
+                hrv={42}
+                onClose={() => setActiveModal(null)}
+            />
+
+            <RHRModal
+                visible={activeModal === 'Heart Rate'}
+                rhr={79}
+                onClose={() => setActiveModal(null)}
+            />
+
+            <FacialSkinAgeModal
+                visible={activeModal === 'Facial skin age'}
+                skAge={79}
+                onClose={() => setActiveModal(null)}
+            />
+
         </ScreenWrapperForDashboard>
     )
 }
