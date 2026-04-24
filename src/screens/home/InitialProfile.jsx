@@ -103,7 +103,7 @@ const InitialProfile = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#EEE8DF" />
+            <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

@@ -95,7 +95,7 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#EEE8DF" />
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" />
 
       {/* Header text */}
       <View style={styles.header}>
